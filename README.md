@@ -5,7 +5,6 @@ https://drive.google.com/file/d/1sIv9rb6PizW9sfts9eVu0BkLYWLjysiT/view
 
 Python Exception handling
 https://drive.google.com/file/d/1JaPWKbfL4jOw8IPTJo67dFypR-BhDm3t/view?usp=sharing
-# File Handling with Exception Handling
 
 **Rules for this assignment**
 

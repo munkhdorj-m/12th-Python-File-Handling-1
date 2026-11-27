@@ -1,44 +1,89 @@
-# Python File Handling 2
+# Python File Handling with Exception Handling 1
  
 Python File handling
 https://drive.google.com/file/d/1sIv9rb6PizW9sfts9eVu0BkLYWLjysiT/view
 
-**Rules**
+Python Exception handling
+https://drive.google.com/file/d/1JaPWKbfL4jOw8IPTJo67dFypR-BhDm3t/view?usp=sharing
+# File Handling with Exception Handling
 
-- Always `close()` a file after you finish with it.
-- Pick the right mode. `"w"` **erases** the file first. `"a"` **adds** to the end.
-  `"r"` only reads.
-- `filename` is given to you as a parameter — never type a file name inside
-  your function.
-- Every line you write must end with `"\n"`.
+**Rules for this assignment**
 
+- **Every** function must use exception handling (`try` / `except`). A test
+  checks for it.
+- Do not let your program crash — catch the error and do what the exercise says.
+- Functions **return** their answer. Only print the messages the exercise asks for.
+- Always **close** a file when you have finished with it.
+
+
+## Before you start: exceptions
+
+An **exception** is an error that happens while the program is **running**
+(not a syntax error). If nothing catches it, the program crashes.
+
+    Number = int("abc")      →  ValueError: invalid literal for int()
+    File = open("x.txt")     →  FileNotFoundError: No such file or directory
+
+**Exception handling** means: *try* the risky code, and if an exception
+happens, *jump* to code that deals with it — instead of crashing.
+
+    try:
+        File = open("scores.txt", "r")
+    except FileNotFoundError:
+        print("File not found")
+
+- The code in `try:` runs first.
+- If an exception happens, Python **stops** the `try:` part at that line and
+  runs the matching `except:` part.
+- If no exception happens, the `except:` part is skipped.
+
+Put the `try` **inside** the loop. A bad line is caught, and the loop carries on
+with the next line:
+
+    for Line in File:
+        try:
+            Number = int(Line.strip())
+            Total = Total + Number
+        except ValueError:
+            print("Bad line skipped")
+
+---
 
 ## Exercise 1
 
 **Problem:**
 
-`names` is a list of student names and `scores` is a list of their scores, in
-the same order. Write each student to the file on its own line as
-`name,score`. The function returns nothing.
+`ReadNumbers(FileName)`
 
-If the file already exists, the old content must be **replaced**, not added to.
+The file holds one value on each line. Most lines are whole numbers, but some
+are not (words, decimals, empty lines).
+
+- Return a **list** of all the whole numbers in the file, in the same order
+- **Skip** any line that is not a whole number — do not crash
+- If the file does not exist, output `File not found` and return `[]`
+
+Negative numbers like `-2` **are** whole numbers. (So `.isdigit()` is not good
+enough — use `try` / `except ValueError`.)
 
 **Example:**
 
-    Example Input:
-        names    = ["Bat", "Saraa", "Anu"]
-        scores   = [78, 91, 65]
-        filename = "scores.txt"
+`numbers.txt` contains:
 
-    File Output (scores.txt):
-        Bat,78
-        Saraa,91
-        Anu,65
+    5
+    abc
 
-Note the format carefully: name, comma, score — **no spaces**.
+    3.5
+    8
+    -2
 
-*Hint:* `write()` only accepts strings. `str(78)` turns the number 78 into
-the string `"78"`.
+    Input:
+      print(ReadNumbers("numbers.txt"))
+      print(ReadNumbers("missing.txt"))
+
+    Output:
+      [5, 8, -2]
+      File not found
+      []
 
 ---
 
@@ -46,36 +91,35 @@ the string `"78"`.
 
 **Problem:**
 
-Every line of the file looks like `name,score`. Return the **average** score,
-rounded to 1 decimal place with `round(value, 1)`.
+`WriteScores(FileName, Scores)`
 
-- Skip any blank lines completely.
-- If the file has no students, return `0`.
+`Scores` is a 2D list. Each item is `[Name, Score]`.
+
+- Write each student to the file on its own line as `Name,Score`
+- Any old contents of the file are **replaced**
+- Return `True` if the file was written
+- If the file cannot be opened for writing, output `Cannot write to file`
+  and return `False`
+
+A file cannot be opened for writing when its **folder does not exist**, or when
+the name is a **folder**, not a file. These raise **different** exceptions — so
+catch `OSError` (or `IOError`), which covers **all** file problems.
 
 **Example:**
 
-    Example File Content (scores.txt):
-        Bat,78
-        Saraa,91
-        Anu,65
+    Input:
+      print(WriteScores("scores.txt", [["Anu", 85], ["Bat", 62]]))
+      print(WriteScores("no_folder/scores.txt", [["Anu", 85]]))
 
-    Program Output:
-        78.0
+    Output:
+      True
+      Cannot write to file
+      False
 
-    Example File Content (scores.txt):
-        Bat,70
-        Saraa,81
+`scores.txt` now contains:
 
-    Program Output:
-        75.5
-
-    Example File Content (empty file):
-
-    Program Output:
-        0
-
-*Hint:* `"Saraa,91".split(",")` gives `["Saraa", "91"]`. Use `int()` on the
-second part to get the number.
+    Anu,85
+    Bat,62
 
 ---
 
@@ -83,119 +127,53 @@ second part to get the number.
 
 **Problem:**
 
-Read the file `source`, where every line looks like `name,score`. Write a
-**new** file `destination` containing only the students whose score is
-`pass_mark` **or more**, in the same `name,score` format.
-Return how many students passed.
+`ProcessResults(InFile, OutFile)`
 
-The `source` file must not be changed.
+`InFile` holds exam results, one student per line: `Name,Score`.
 
-**Example:**
+For each **valid** line, write `Name,Grade` to `OutFile`:
 
-    Example File Content (all.txt):
-        Bat,78
-        Saraa,91
-        Anu,45
-        Dorj,50
+| Score | Grade |
+|---|---|
+| 80 – 100 | A |
+| 60 – 79 | B |
+| 40 – 59 | C |
+| 0 – 39 | U |
 
-    Example Input:
-        pass_mark = 50
+A line is **invalid** if:
 
-    File Output (passed.txt):
-        Bat,78
-        Saraa,91
-        Dorj,50
+- it does not have exactly **one** comma (`Bat` or `Zaya,50,70`)
+- the score is not a whole number (`Tom,abc` or `Dorj,7.5`)
+- the score is less than 0 or more than 100 (`Saraa,105`)
 
-    Program Output:
-        3
+Invalid lines are **not** written to `OutFile`. Count them, and return the
+number of invalid lines.
 
-Dorj has exactly 50 — that is a pass.
+If `InFile` does not exist, output `File not found` and return `-1`.
 
-*Hint:* read everything from `source` and `close()` it **before** you open
-`destination`. Two files, two `open()` calls, two `close()` calls.
-
----
-
-## Exercise 4
-
-**Problem:**
-
-Replace every `old_word` in the file with `new_word`, and save the file.
-Return how many times the word was replaced.
-
-Capital letters matter: `"cats"` does **not** match `"Cats"`.
+*Hint:* `try` / `except ValueError` catches a score that is not a whole number.
+The comma check and the 0–100 check are normal `if` statements — count those
+lines as invalid too.
 
 **Example:**
 
-    Example File Content (story.txt):
-        I like cats.
-        Cats are cute.
-        cats sleep a lot.
+`results.txt` contains:
 
-    Example Input:
-        old_word = "cats"
-        new_word = "dogs"
+    Anu,85
+    Bat
+    Tom,abc
+    Saraa,105
+    Nomin,60
 
-    File Content afterwards (story.txt):
-        I like dogs.
-        Cats are cute.
-        dogs sleep a lot.
+    Input:
+      print(ProcessResults("results.txt", "grades.txt"))
 
-    Program Output:
-        2
+    Output:
+      3
 
-*Hint:* read the whole file with `read()`, `close()` it, then open it again
-in `"w"` mode to write the new text. If you open it with `"w"` first, the file
-is **erased** before you can read it!
+`grades.txt` now contains:
 
-`"red red".count("red")` gives `2`, and `"red red".replace("red", "blue")`
-gives `"blue blue"`.
-
----
-
-## Exercise 5
-
-**Problem:**
-
-Remove line number `line_number` (starting at 1) from the file, and save the
-file. Return `True` if the line was removed.
-
-If the file has no line with that number, do **not** change the file, and
-return `False`.
-
-**Example:**
-
-    Example File Content (days.txt):
-        Mon
-        Tue
-        Wed
-        Thu
-
-    Example Input:
-        line_number = 2
-
-    File Content afterwards (days.txt):
-        Mon
-        Wed
-        Thu
-
-    Program Output:
-        True
-
-    Example Input:
-        line_number = 5
-
-    File Content afterwards (days.txt):
-        Mon
-        Tue
-        Wed
-        Thu
-
-    Program Output:
-        False
-
-*Hint:* `readlines()` gives you a list — line 1 is `lines[0]`. Check the line
-number **before** you open the file in `"w"` mode, then write back every line
-except the one you are removing.
+    Anu,A
+    Nomin,B
 
 ---

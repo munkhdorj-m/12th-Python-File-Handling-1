@@ -28,70 +28,80 @@ def read_file(path):
     return text
 
 
-def test1_read_numbers(tmp_path):
-    path = make_file(tmp_path, "numbers.txt", "12\n7\n-3\n40\n")
-    assert assignment.ReadNumbers(path) == [12, 7, -3, 40]
-    path = make_file(tmp_path, "one.txt", "5")
-    assert assignment.ReadNumbers(path) == [5]
-
-
-def test1_skips_bad_lines(tmp_path):
-    path = make_file(tmp_path, "numbers.txt", "5\nabc\n\n3.5\n8\ntwenty\n-2\n9")
-    assert assignment.ReadNumbers(path) == [5, 8, -2, 9]
-    path = make_file(tmp_path, "bad.txt", "x\ny\n")
-    assert assignment.ReadNumbers(path) == []
-
-
-def test1_empty_file(tmp_path):
+def test1_read_file(tmp_path):
+    path = make_file(tmp_path, "hello.txt", "Hello\nWorld\n")
+    assert assignment.ReadFile(path) == "Hello\nWorld\n"
     path = make_file(tmp_path, "empty.txt", "")
-    assert assignment.ReadNumbers(path) == []
+    assert assignment.ReadFile(path) == ""
 
 
 def test1_file_not_found(tmp_path, capsys):
-    assert assignment.ReadNumbers(str(tmp_path / "missing.txt")) == []
-    assert "File not found" in capsys.readouterr().out
-    assert uses_try(assignment.ReadNumbers), "ReadNumbers() must use try / except."
+    assert assignment.ReadFile(str(tmp_path / "missing.txt")) == ""
+    assert capsys.readouterr().out == "File not found\n"
+    assert uses_try(assignment.ReadFile), "ReadFile() must use try / except."
 
 
-def test2_write_scores(tmp_path):
-    path = str(tmp_path / "scores.txt")
-    assert assignment.WriteScores(path, [["Anu", 85], ["Bat", 62], ["Tom", 7]]) == True
-    assert read_file(path) == "Anu,85\nBat,62\nTom,7\n"
+def test2_read_number(tmp_path):
+    path = make_file(tmp_path, "number.txt", "42\n")
+    assert assignment.ReadNumber(path) == 42
+    path = make_file(tmp_path, "negative.txt", "-7")
+    assert assignment.ReadNumber(path) == -7
 
 
-def test2_overwrites_and_empty(tmp_path):
-    path = make_file(tmp_path, "scores.txt", "Old,1\nOld,2\n")
-    assert assignment.WriteScores(path, [["Saraa", 90]]) == True
-    assert read_file(path) == "Saraa,90\n"
-    assert assignment.WriteScores(path, []) == True
-    assert read_file(path) == ""
+def test2_file_not_found(tmp_path, capsys):
+    assert assignment.ReadNumber(str(tmp_path / "missing.txt")) == -1
+    assert capsys.readouterr().out == "File not found\n"
+    assert uses_try(assignment.ReadNumber), "ReadNumber() must use try / except."
 
 
-def test2_cannot_write(tmp_path, capsys):
-    assert assignment.WriteScores(str(tmp_path), [["Anu", 85]]) == False
-    assert "Cannot write to file" in capsys.readouterr().out
-    path = str(tmp_path / "no_folder" / "scores.txt")
-    assert assignment.WriteScores(path, [["Anu", 85]]) == False
-    assert "Cannot write to file" in capsys.readouterr().out
-    assert uses_try(assignment.WriteScores), "WriteScores() must use try / except."
+def test2_not_a_number(tmp_path, capsys):
+    path = make_file(tmp_path, "word.txt", "hello\n")
+    assert assignment.ReadNumber(path) == -1
+    assert capsys.readouterr().out == "Not a number\n"
+    path = make_file(tmp_path, "decimal.txt", "3.5\n")
+    assert assignment.ReadNumber(path) == -1
+    assert capsys.readouterr().out == "Not a number\n"
+    path = make_file(tmp_path, "empty.txt", "")
+    assert assignment.ReadNumber(path) == -1
+    assert capsys.readouterr().out == "Not a number\n"
 
 
-def test3_grades(tmp_path):
-    source = make_file(tmp_path, "results.txt", "Anu,85\nBat,62\nTom,40\nSaraa,39\nBold,80\nAnu Bat,60\nNomin,100\nZaya,0\n")
-    target = str(tmp_path / "grades.txt")
-    assert assignment.ProcessResults(source, target) == 0
-    assert read_file(target) == "Anu,A\nBat,B\nTom,C\nSaraa,U\nBold,A\nAnu Bat,B\nNomin,A\nZaya,U\n"
+def test3_save_message(tmp_path):
+    path = str(tmp_path / "message.txt")
+    assert assignment.SaveMessage(path, "Hello class") == True
+    assert read_file(path) == "Hello class"
 
 
-def test3_invalid_lines(tmp_path):
-    source = make_file(tmp_path, "results.txt", "Anu,85\nBat\nTom,abc\nSaraa,105\nBold,-1\nZaya,50,70\nNomin,60\nDorj,7.5")
-    target = str(tmp_path / "grades.txt")
-    assert assignment.ProcessResults(source, target) == 6
-    assert read_file(target) == "Anu,A\nNomin,B\n"
+def test3_replaces_old_message(tmp_path):
+    path = make_file(tmp_path, "message.txt", "Old message")
+    assert assignment.SaveMessage(path, "New") == True
+    assert read_file(path) == "New"
 
 
-def test3_file_not_found(tmp_path, capsys):
-    target = str(tmp_path / "grades.txt")
-    assert assignment.ProcessResults(str(tmp_path / "missing.txt"), target) == -1
-    assert "File not found" in capsys.readouterr().out
-    assert uses_try(assignment.ProcessResults), "ProcessResults() must use try / except."
+def test3_cannot_save(tmp_path, capsys):
+    path = str(tmp_path / "no_folder" / "message.txt")
+    assert assignment.SaveMessage(path, "Hello") == False
+    assert capsys.readouterr().out == "Cannot save\n"
+    assert assignment.SaveMessage(str(tmp_path), "Hello") == False
+    assert capsys.readouterr().out == "Cannot save\n"
+    assert uses_try(assignment.SaveMessage), "SaveMessage() must use try / except."
+
+
+def test4_total(tmp_path):
+    path = make_file(tmp_path, "numbers.txt", "10\n20\n5\n-3\n")
+    assert assignment.TotalOfFile(path) == 32
+    path = make_file(tmp_path, "empty.txt", "")
+    assert assignment.TotalOfFile(path) == 0
+
+
+def test4_skips_bad_lines(tmp_path):
+    path = make_file(tmp_path, "numbers.txt", "10\nten\n\n2.5\n20\n")
+    assert assignment.TotalOfFile(path) == 30
+    path = make_file(tmp_path, "words.txt", "a\nb\n")
+    assert assignment.TotalOfFile(path) == 0
+
+
+def test4_file_not_found(tmp_path, capsys):
+    assert assignment.TotalOfFile(str(tmp_path / "missing.txt")) == -1
+    assert capsys.readouterr().out == "File not found\n"
+    assert uses_try(assignment.TotalOfFile), "TotalOfFile() must use try / except."

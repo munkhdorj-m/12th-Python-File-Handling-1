@@ -3,39 +3,29 @@
 import pytest
 
 HINTS = [
-    ["No such file or directory",
-     "Python could not find the file.\n"
-     "Mode \"r\" only opens a file that already exists.\n"
-     "If you are making a new file, use \"w\" or \"a\"."],
+    ["No such file",
+     "Your code crashed because the file does not exist.\n"
+     "Put open() inside  try:  and catch it with  except FileNotFoundError:"],
 
-    ["write() argument must be str",
-     "write() only accepts strings (text).\n"
-     "Change a number into a string first, for example:  str(78)"],
+    ["Is a directory",
+     "Your code crashed because the file could not be opened for writing.\n"
+     "Catch it with  except OSError:  (IOError is the same thing)."],
+
+    ["invalid literal for int()",
+     "int() was given text that is not a whole number, and your code crashed.\n"
+     "Put int() inside  try:  and catch it with  except ValueError:"],
+
+    ["index out of range",
+     "A line did not have the parts you expected (for example no comma).\n"
+     "Check len(Parts) before you use Parts[1], or catch the error."],
 
     ["can only concatenate str",
      "You tried to join a string and a number with +.\n"
-     "Change the number into a string first, for example:  str(78)"],
+     "Change the number into a string first:  str(Score)"],
 
-    ["I/O operation on closed file",
-     "You closed the file and then tried to use it again.\n"
-     "Read or write everything you need BEFORE calling close()."],
-
-    ["invalid literal for int()",
-     "int() was given something that is not a number.\n"
-     "Did you .strip() the line and .split(\",\") it first?\n"
-     "Are you skipping blank lines?"],
-
-    ["index out of range",
-     "A line did not split into two parts.\n"
-     "This usually means a blank line - skip lines that are empty after .strip()."],
-
-    ["not readable",
-     "You opened the file in \"w\" or \"a\" mode and then tried to read it.\n"
-     "To read, open the file with \"r\"."],
-
-    ["not writable",
-     "You opened the file in \"r\" mode and then tried to write to it.\n"
-     "To write, open the file with \"w\" or \"a\"."],
+    ["'NoneType' object",
+     "Something is None (nothing). A function probably forgot to 'return'\n"
+     "its answer, or you left 'pass' in it."],
 ]
 
 

@@ -1,20 +1,27 @@
 # You can remove 'pass' if you written code in the function
 # Every exercise must use exception handling: try / except
 
+
 # Exercise 1
-def ReadNumbers(FileName):
+def ReadFile(FileName):
     # Write your code here
     pass
 
 
 # Exercise 2
-def WriteScores(FileName, Scores):
+def ReadNumber(FileName):
     # Write your code here
     pass
 
 
 # Exercise 3
-def ProcessResults(InFile, OutFile):
+def SaveMessage(FileName, Message):
+    # Write your code here
+    pass
+
+
+# Exercise 4
+def TotalOfFile(FileName):
     # Write your code here
     pass
 

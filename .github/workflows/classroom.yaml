@@ -28,30 +28,12 @@ jobs:
       - name: Install pytest
         run: pip install -r requirements.txt
 
-      - name: Ex 1 - ReadNumbers
-        id: ex1_read_numbers
+      - name: Ex 1 - ReadFile
+        id: ex1_read_file
         uses: classroom-resources/autograding-command-grader@v1
         with:
-          test-name: Ex 1 - ReadNumbers
-          command: pytest test_assignment.py::test1_read_numbers
-          timeout: 2
-          max-score: 1
-
-      - name: Ex 1 - Skips bad lines
-        id: ex1_skips_bad_lines
-        uses: classroom-resources/autograding-command-grader@v1
-        with:
-          test-name: Ex 1 - Skips bad lines
-          command: pytest test_assignment.py::test1_skips_bad_lines
-          timeout: 2
-          max-score: 1
-
-      - name: Ex 1 - Empty file
-        id: ex1_empty_file
-        uses: classroom-resources/autograding-command-grader@v1
-        with:
-          test-name: Ex 1 - Empty file
-          command: pytest test_assignment.py::test1_empty_file
+          test-name: Ex 1 - ReadFile
+          command: pytest test_assignment.py::test1_read_file
           timeout: 2
           max-score: 1
 
@@ -64,72 +46,100 @@ jobs:
           timeout: 2
           max-score: 1
 
-      - name: Ex 2 - WriteScores
-        id: ex2_write_scores
+      - name: Ex 2 - ReadNumber
+        id: ex2_read_number
         uses: classroom-resources/autograding-command-grader@v1
         with:
-          test-name: Ex 2 - WriteScores
-          command: pytest test_assignment.py::test2_write_scores
+          test-name: Ex 2 - ReadNumber
+          command: pytest test_assignment.py::test2_read_number
           timeout: 2
           max-score: 1
 
-      - name: Ex 2 - Overwrites file
-        id: ex2_overwrites_and_empty
+      - name: Ex 2 - File not found
+        id: ex2_file_not_found
         uses: classroom-resources/autograding-command-grader@v1
         with:
-          test-name: Ex 2 - Overwrites file
-          command: pytest test_assignment.py::test2_overwrites_and_empty
+          test-name: Ex 2 - File not found
+          command: pytest test_assignment.py::test2_file_not_found
           timeout: 2
           max-score: 1
 
-      - name: Ex 2 - Cannot write
-        id: ex2_cannot_write
+      - name: Ex 2 - Not a number
+        id: ex2_not_a_number
         uses: classroom-resources/autograding-command-grader@v1
         with:
-          test-name: Ex 2 - Cannot write
-          command: pytest test_assignment.py::test2_cannot_write
+          test-name: Ex 2 - Not a number
+          command: pytest test_assignment.py::test2_not_a_number
           timeout: 2
           max-score: 1
 
-      - name: Ex 3 - ProcessResults grades
-        id: ex3_grades
+      - name: Ex 3 - SaveMessage
+        id: ex3_save_message
         uses: classroom-resources/autograding-command-grader@v1
         with:
-          test-name: Ex 3 - ProcessResults grades
-          command: pytest test_assignment.py::test3_grades
+          test-name: Ex 3 - SaveMessage
+          command: pytest test_assignment.py::test3_save_message
           timeout: 2
           max-score: 1
 
-      - name: Ex 3 - Invalid lines
-        id: ex3_invalid_lines
+      - name: Ex 3 - Replaces old message
+        id: ex3_replaces_old_message
         uses: classroom-resources/autograding-command-grader@v1
         with:
-          test-name: Ex 3 - Invalid lines
-          command: pytest test_assignment.py::test3_invalid_lines
+          test-name: Ex 3 - Replaces old message
+          command: pytest test_assignment.py::test3_replaces_old_message
           timeout: 2
           max-score: 1
 
-      - name: Ex 3 - File not found
-        id: ex3_file_not_found
+      - name: Ex 3 - Cannot save
+        id: ex3_cannot_save
         uses: classroom-resources/autograding-command-grader@v1
         with:
-          test-name: Ex 3 - File not found
-          command: pytest test_assignment.py::test3_file_not_found
+          test-name: Ex 3 - Cannot save
+          command: pytest test_assignment.py::test3_cannot_save
+          timeout: 2
+          max-score: 1
+
+      - name: Ex 4 - TotalOfFile
+        id: ex4_total
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Ex 4 - TotalOfFile
+          command: pytest test_assignment.py::test4_total
+          timeout: 2
+          max-score: 1
+
+      - name: Ex 4 - Skips bad lines
+        id: ex4_skips_bad_lines
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Ex 4 - Skips bad lines
+          command: pytest test_assignment.py::test4_skips_bad_lines
+          timeout: 2
+          max-score: 1
+
+      - name: Ex 4 - File not found
+        id: ex4_file_not_found
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Ex 4 - File not found
+          command: pytest test_assignment.py::test4_file_not_found
           timeout: 2
           max-score: 1
 
       - name: Autograding Reporter
         uses: classroom-resources/autograding-grading-reporter@v1
         env:
-          EX1_READ_NUMBERS_RESULTS: "${{ steps.ex1_read_numbers.outputs.result }}"
-          EX1_SKIPS_BAD_LINES_RESULTS: "${{ steps.ex1_skips_bad_lines.outputs.result }}"
-          EX1_EMPTY_FILE_RESULTS: "${{ steps.ex1_empty_file.outputs.result }}"
+          EX1_READ_FILE_RESULTS: "${{ steps.ex1_read_file.outputs.result }}"
           EX1_FILE_NOT_FOUND_RESULTS: "${{ steps.ex1_file_not_found.outputs.result }}"
-          EX2_WRITE_SCORES_RESULTS: "${{ steps.ex2_write_scores.outputs.result }}"
-          EX2_OVERWRITES_AND_EMPTY_RESULTS: "${{ steps.ex2_overwrites_and_empty.outputs.result }}"
-          EX2_CANNOT_WRITE_RESULTS: "${{ steps.ex2_cannot_write.outputs.result }}"
-          EX3_GRADES_RESULTS: "${{ steps.ex3_grades.outputs.result }}"
-          EX3_INVALID_LINES_RESULTS: "${{ steps.ex3_invalid_lines.outputs.result }}"
-          EX3_FILE_NOT_FOUND_RESULTS: "${{ steps.ex3_file_not_found.outputs.result }}"
+          EX2_READ_NUMBER_RESULTS: "${{ steps.ex2_read_number.outputs.result }}"
+          EX2_FILE_NOT_FOUND_RESULTS: "${{ steps.ex2_file_not_found.outputs.result }}"
+          EX2_NOT_A_NUMBER_RESULTS: "${{ steps.ex2_not_a_number.outputs.result }}"
+          EX3_SAVE_MESSAGE_RESULTS: "${{ steps.ex3_save_message.outputs.result }}"
+          EX3_REPLACES_OLD_MESSAGE_RESULTS: "${{ steps.ex3_replaces_old_message.outputs.result }}"
+          EX3_CANNOT_SAVE_RESULTS: "${{ steps.ex3_cannot_save.outputs.result }}"
+          EX4_TOTAL_RESULTS: "${{ steps.ex4_total.outputs.result }}"
+          EX4_SKIPS_BAD_LINES_RESULTS: "${{ steps.ex4_skips_bad_lines.outputs.result }}"
+          EX4_FILE_NOT_FOUND_RESULTS: "${{ steps.ex4_file_not_found.outputs.result }}"
         with:
-          runners: ex1_read_numbers,ex1_skips_bad_lines,ex1_empty_file,ex1_file_not_found,ex2_write_scores,ex2_overwrites_and_empty,ex2_cannot_write,ex3_grades,ex3_invalid_lines,ex3_file_not_found
+          runners: ex1_read_file,ex1_file_not_found,ex2_read_number,ex2_file_not_found,ex2_not_a_number,ex3_save_message,ex3_replaces_old_message,ex3_cannot_save,ex4_total,ex4_skips_bad_lines,ex4_file_not_found

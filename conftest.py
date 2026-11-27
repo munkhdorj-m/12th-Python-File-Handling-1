@@ -5,7 +5,7 @@ import pytest
 HINTS = [
     ["No such file",
      "Your code crashed because the file does not exist.\n"
-     "Put open() inside  try:  and catch it with  except FileNotFoundError:"],
+     "Put open() inside  try:  and catch it with an  except  block."],
 
     ["Is a directory",
      "Your code crashed because the file could not be opened for writing.\n"
@@ -14,14 +14,6 @@ HINTS = [
     ["invalid literal for int()",
      "int() was given text that is not a whole number, and your code crashed.\n"
      "Put int() inside  try:  and catch it with  except ValueError:"],
-
-    ["index out of range",
-     "A line did not have the parts you expected (for example no comma).\n"
-     "Check len(Parts) before you use Parts[1], or catch the error."],
-
-    ["can only concatenate str",
-     "You tried to join a string and a number with +.\n"
-     "Change the number into a string first:  str(Score)"],
 
     ["'NoneType' object",
      "Something is None (nothing). A function probably forgot to 'return'\n"

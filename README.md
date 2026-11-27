@@ -10,24 +10,26 @@ https://drive.google.com/file/d/1JaPWKbfL4jOw8IPTJo67dFypR-BhDm3t/view?usp=shari
 
 - **Every** function must use exception handling (`try` / `except`). A test
   checks for it.
-- Do not let your program crash — catch the error and do what the exercise says.
+- Your program must **never crash** — catch the error and do what the exercise says.
 - Functions **return** their answer. Only print the messages the exercise asks for.
 - Always **close** a file when you have finished with it.
 
 
 ## Before you start: exceptions
 
-An **exception** is an error that happens while the program is **running**
-(not a syntax error). If nothing catches it, the program crashes.
+An **exception** is an error that happens while the program is **running**.
+If nothing catches it, the program **crashes**.
 
-    Number = int("abc")      →  ValueError: invalid literal for int()
-    File = open("x.txt")     →  FileNotFoundError: No such file or directory
+    File = open("missing.txt", "r")    →  FileNotFoundError
+    Number = int("hello")              →  ValueError
 
-**Exception handling** means: *try* the risky code, and if an exception
-happens, *jump* to code that deals with it — instead of crashing.
+**Exception handling** means: *try* the risky code. If an exception happens,
+Python jumps to the `except` part instead of crashing.
 
     try:
-        File = open("scores.txt", "r")
+        File = open("data.txt", "r")
+        print(File.read())
+        File.close()
     except FileNotFoundError:
         print("File not found")
 
@@ -36,15 +38,26 @@ happens, *jump* to code that deals with it — instead of crashing.
   runs the matching `except:` part.
 - If no exception happens, the `except:` part is skipped.
 
-Put the `try` **inside** the loop. A bad line is caught, and the loop carries on
-with the next line:
+**More than one `except`**
 
-    for Line in File:
-        try:
-            Number = int(Line.strip())
-            Total = Total + Number
-        except ValueError:
-            print("Bad line skipped")
+One `try` can have several `except` blocks — one for each kind of error.
+Python runs the one that matches:
+
+    try:
+        Age = int(input("Age: "))
+        print(100 / Age)
+    except ValueError:
+        print("That is not a whole number")
+    except ZeroDivisionError:
+        print("Age cannot be 0")
+
+**Exceptions you need today**
+
+| Exception | When it happens |
+|---|---|
+| `FileNotFoundError` | Opening a file for **reading** that does not exist |
+| `OSError` (also called `IOError`) | **Any** file problem — including a file that cannot be written |
+| `ValueError` | `int("hello")`, `int("3.5")`, `int("")` |
 
 ---
 
@@ -52,37 +65,27 @@ with the next line:
 
 **Problem:**
 
-`ReadNumbers(FileName)`
+`ReadFile(FileName)`
 
-The file holds one value on each line. Most lines are whole numbers, but some
-are not (words, decimals, empty lines).
-
-- Return a **list** of all the whole numbers in the file, in the same order
-- **Skip** any line that is not a whole number — do not crash
-- If the file does not exist, output `File not found` and return `[]`
-
-Negative numbers like `-2` **are** whole numbers. (So `.isdigit()` is not good
-enough — use `try` / `except ValueError`.)
+- Return **all** the text in the file as one string
+- If the file does not exist, output `File not found` and return `""`
 
 **Example:**
 
-`numbers.txt` contains:
+`hello.txt` contains:
 
-    5
-    abc
-
-    3.5
-    8
-    -2
+    Hello
+    World
 
     Input:
-      print(ReadNumbers("numbers.txt"))
-      print(ReadNumbers("missing.txt"))
+      print(ReadFile("hello.txt"))
+      print(ReadFile("missing.txt"))
 
     Output:
-      [5, 8, -2]
+      Hello
+      World
+
       File not found
-      []
 
 ---
 
@@ -90,35 +93,33 @@ enough — use `try` / `except ValueError`.)
 
 **Problem:**
 
-`WriteScores(FileName, Scores)`
+`ReadNumber(FileName)`
 
-`Scores` is a 2D list. Each item is `[Name, Score]`.
+The **first line** of the file should hold a whole number.
 
-- Write each student to the file on its own line as `Name,Score`
-- Any old contents of the file are **replaced**
-- Return `True` if the file was written
-- If the file cannot be opened for writing, output `Cannot write to file`
-  and return `False`
+- Return that number as an **integer**
+- If the file does not exist, output `File not found` and return `-1`
+- If the first line is not a whole number, output `Not a number` and return `-1`
 
-A file cannot be opened for writing when its **folder does not exist**, or when
-the name is a **folder**, not a file. These raise **different** exceptions — so
-catch `OSError` (or `IOError`), which covers **all** file problems.
+You need **two** `except` blocks — one for each error.
+
+*Hint:* `File.readline()` reads one line. Use `.strip()` before `int()`.
 
 **Example:**
 
+`number.txt` contains `42`. `word.txt` contains `hello`.
+
     Input:
-      print(WriteScores("scores.txt", [["Anu", 85], ["Bat", 62]]))
-      print(WriteScores("no_folder/scores.txt", [["Anu", 85]]))
+      print(ReadNumber("number.txt"))
+      print(ReadNumber("missing.txt"))
+      print(ReadNumber("word.txt"))
 
     Output:
-      True
-      Cannot write to file
-      False
-
-`scores.txt` now contains:
-
-    Anu,85
-    Bat,62
+      42
+      File not found
+      -1
+      Not a number
+      -1
 
 ---
 
@@ -126,53 +127,65 @@ catch `OSError` (or `IOError`), which covers **all** file problems.
 
 **Problem:**
 
-`ProcessResults(InFile, OutFile)`
+`SaveMessage(FileName, Message)`
 
-`InFile` holds exam results, one student per line: `Name,Score`.
+- Write `Message` to the file (replace anything already in it)
+- Return `True`
+- If the file cannot be written, output `Cannot save` and return `False`
 
-For each **valid** line, write `Name,Grade` to `OutFile`:
-
-| Score | Grade |
-|---|---|
-| 80 – 100 | A |
-| 60 – 79 | B |
-| 40 – 59 | C |
-| 0 – 39 | U |
-
-A line is **invalid** if:
-
-- it does not have exactly **one** comma (`Bat` or `Zaya,50,70`)
-- the score is not a whole number (`Tom,abc` or `Dorj,7.5`)
-- the score is less than 0 or more than 100 (`Saraa,105`)
-
-Invalid lines are **not** written to `OutFile`. Count them, and return the
-number of invalid lines.
-
-If `InFile` does not exist, output `File not found` and return `-1`.
-
-*Hint:* `try` / `except ValueError` catches a score that is not a whole number.
-The comma check and the 0–100 check are normal `if` statements — count those
-lines as invalid too.
+A file cannot be written when, for example, its **folder does not exist**.
+Catch `OSError` (or `IOError`) — it covers **every** file problem.
 
 **Example:**
 
-`results.txt` contains:
-
-    Anu,85
-    Bat
-    Tom,abc
-    Saraa,105
-    Nomin,60
-
     Input:
-      print(ProcessResults("results.txt", "grades.txt"))
+      print(SaveMessage("message.txt", "Hello class"))
+      print(SaveMessage("no_folder/message.txt", "Hello"))
 
     Output:
-      3
+      True
+      Cannot save
+      False
 
-`grades.txt` now contains:
+`message.txt` now contains:
 
-    Anu,A
-    Nomin,B
+    Hello class
 
 ---
+
+## Exercise 4
+
+**Problem:**
+
+`TotalOfFile(FileName)`
+
+The file holds one value on each line. Most are whole numbers, but some are not.
+
+- Return the **total** of all the whole numbers in the file
+- **Skip** any line that is not a whole number — do not stop
+- If the file does not exist, output `File not found` and return `-1`
+
+*Hint:* put a **second** `try` / `except ValueError` **inside** the loop.
+Then a bad line is skipped and the loop carries on with the next line.
+
+**Example:**
+
+`numbers.txt` contains:
+
+    10
+    ten
+
+    2.5
+    20
+
+    Input:
+      print(TotalOfFile("numbers.txt"))
+      print(TotalOfFile("missing.txt"))
+
+    Output:
+      30
+      File not found
+      -1
+
+---
+
